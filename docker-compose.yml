@@ -1,0 +1,54 @@
+﻿networks:
+  nutrikal-network:
+    driver: bridge
+
+services:
+  nutrikal-backend:
+    container_name: nutrikal-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      PORT: "3001"
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+      FRONTEND_URL: http://localhost:3000
+    volumes:
+      - /app/node_modules
+    restart: unless-stopped
+    networks:
+      - nutrikal-network
+
+  nutrikal-frontend:
+    container_name: nutrikal-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_SUPABASE_URL: ${SUPABASE_URL}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+    volumes:
+      - /app/node_modules
+    depends_on:
+      - nutrikal-backend
+    restart: unless-stopped
+    networks:
+      - nutrikal-network
+
+  ollama:
+    container_name: ollama
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./ai/ollama_data:/root/.ollama
+    restart: unless-stopped
+    networks:
+      - nutrikal-network
