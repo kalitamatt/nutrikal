@@ -95,3 +95,17 @@ Misc
 .backup.
 *.old
 *.retry
+
+ai/ollama_data/id_ed25519
+
+ai/ollama_data/id_ed25519.pub
+
+.ssh/
+
+id_rsa
+
+id_ed25519
+
+*.pem
+
+*.key
